@@ -45,6 +45,9 @@ log = logging.getLogger("svitlo")
 
 
 # ---------- Telegram ----------
+KB = json.dumps({"keyboard": [[{"text": "💡 Світло"}]], "resize_keyboard": True, "is_persistent": True})  # та сама кнопка, що в worker/
+
+
 def tg(method, **kw):
     r = requests.post(f"{API}/{method}", timeout=60, **kw)
     r.raise_for_status()
@@ -56,7 +59,7 @@ def send_text(chat, text):
 
 
 def send_photo(chat, png, caption):
-    tg("sendPhoto", data={"chat_id": chat, "caption": caption[:1024]},
+    tg("sendPhoto", data={"chat_id": chat, "caption": caption[:1024], "reply_markup": KB},
        files={"photo": ("svitlo.png", png)})
 
 
