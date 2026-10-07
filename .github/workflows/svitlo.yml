@@ -1,6 +1,10 @@
 name: svitlo
 on:
   workflow_dispatch:  # запускає кнопка "💡 Світло" в Telegram (через worker/) або "Run workflow"
+    inputs:
+      chat:
+        description: "Кому слати (CHAT_ID); порожньо = власнику"
+        required: false
 
 jobs:
   check:
@@ -9,7 +13,7 @@ jobs:
     container: mcr.microsoft.com/playwright/python:v1.63.0-noble  # Chromium і xvfb уже всередині, версія = requirements.txt
     env:
       BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
-      CHAT_ID: ${{ secrets.CHAT_ID }}
+      CHAT_ID: ${{ inputs.chat || secrets.CHAT_ID }}
       CITY: ${{ secrets.CITY }}
       STREET: ${{ secrets.STREET }}
       HOUSE: ${{ secrets.HOUSE }}
