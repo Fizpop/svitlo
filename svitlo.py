@@ -94,8 +94,7 @@ def fetch():
     with sync_playwright() as p:
         browser = p.chromium.launch(
             headless=HEADLESS, args=["--disable-blink-features=AutomationControlled"])
-        page = browser.new_context(
-            locale="uk-UA", viewport={"width": 1280, "height": 1800}).new_page()
+        page = browser.new_context(**p.devices["iPhone 13"], locale="uk-UA").new_page()  # мобільна верстка: таблиця читабельніша
         try:
             page.goto(URL, wait_until="domcontentloaded", timeout=60000)
             page.wait_for_timeout(3000)
@@ -110,6 +109,7 @@ def fetch():
                 page.wait_for_timeout(700)
             res = page.locator(RESULT_SEL)
             res.wait_for(state="visible", timeout=30000)
+            page.add_style_tag(content=".header-block, .contacts-us-btn { display: none !important }")  # липка шапка і кнопка чату перекривають таблицю
             page.wait_for_timeout(1500)
             return res.inner_text(), res.screenshot()
         except Exception:
