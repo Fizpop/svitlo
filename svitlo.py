@@ -152,6 +152,7 @@ def check(chat, manual=False):
             msg = f"❌ Не вдалося отримати графік: {type(e).__name__}: {e}"[:1000]
             if DEBUG_PNG.exists():
                 send_photo(chat, DEBUG_PNG.read_bytes(), msg)
+                DEBUG_PNG.unlink(missing_ok=True)
             else:
                 send_text(chat, msg)
         return
