@@ -1,0 +1,31 @@
+name: svitlo
+on:
+  schedule:
+    - cron: "*/30 * * * *"
+  workflow_dispatch:  # кнопка "Run workflow" = слати графік завжди
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+      CHAT_ID: ${{ secrets.CHAT_ID }}
+      CITY: ${{ secrets.CITY }}
+      STREET: ${{ secrets.STREET }}
+      HOUSE: ${{ secrets.HOUSE }}
+      LINE: ${{ secrets.LINE }}
+      HEADLESS: "0"  # у headless сайт ДТЕК не віддає підказки; xvfb дає віртуальний екран
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt && playwright install --with-deps chromium
+      # state.json між запусками: кеш незмінний, тож ключ новий щоразу, а restore бере найсвіжіший
+      - uses: actions/cache@v4
+        with:
+          path: state.json
+          key: svitlo-state-${{ github.run_id }}
+          restore-keys: svitlo-state-
+      - run: xvfb-run -a python svitlo.py --once ${{ github.event_name == 'workflow_dispatch' && '--manual' || '' }}
