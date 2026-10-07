@@ -3,3 +3,5 @@
 state.json
 *.log
 *.png
+node_modules/
+.wrangler/
